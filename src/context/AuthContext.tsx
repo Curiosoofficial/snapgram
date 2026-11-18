@@ -1,46 +1,48 @@
-import { getCurrentUser } from '@/lib/appwrite/api';
+import { getCurrentUser } from '@/lib/api';
 import { IContextType, IUser } from '@/types'
 import { createContext, useContext, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom';
 
-export const INITIAL_USER = {
+export const INITIAL_USER: IUser = {
     id: '',
     name: '',
     username: '',
     email: '',
-    password: '',
     imageUrl: '',
     bio: ''
 }
+
 const INITIAL_STATE = {
     user: INITIAL_USER,
-    isLoading: false,
+    isLoading: true,
     isAuthenticated: false,
     setUser: () => {},
     setIsAuthenticated: () => {},
-    checkAuthUser:async () => false as boolean,
+    checkAuthUser: async () => false as boolean,
 }
 
 const AuthContext = createContext<IContextType>(INITIAL_STATE);
 
-const AuthProvider = ({ children }: { children: React.ReactNode}) => {
+const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<IUser>(INITIAL_USER)
-  const [isLoading, setIsLoading] = useState(false);
+  // true until the first session check is done, so protected pages
+  // show a loader instead of redirecting too early
+  const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const navigate = useNavigate();
-
   const checkAuthUser = async () => {
+    setIsLoading(true);
     try {
       const currentAccount = await getCurrentUser();
 
-      if(currentAccount) {
+      if (currentAccount) {
         setUser({
             id: currentAccount.$id,
             name: currentAccount.name,
             username: currentAccount.username,
             email: currentAccount.email,
-            imageUrl: currentAccount.ImageUrl,
+            // was "currentAccount.ImageUrl" (capital I) -> always undefined,
+            // so the profile picture never showed up in the sidebar/topbar
+            imageUrl: currentAccount.imageUrl,
             bio: currentAccount.bio
         })
 
@@ -58,15 +60,12 @@ const AuthProvider = ({ children }: { children: React.ReactNode}) => {
     }
   };
 
+  // Check once on page load whether a session exists. The redirect to
+  // /sign-in now happens in RootLayout. The old check read
+  // localStorage "coockieFallback" (typo) and only worked with Appwrite.
   useEffect(() => {
-    if (
-      localStorage.getItem('coockieFallback') === '[]' ||
-      localStorage.getItem('cookieFallback') === null
-    )   navigate('/sign-in')
-
     checkAuthUser();
   }, []);
-  
 
   const value = {
     user,

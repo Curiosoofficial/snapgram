@@ -1,15 +1,19 @@
 import { Input } from '@/components/ui/input'
 import GridPostList from '@/components/ui/shared/GridPostList';
 import Loader from '@/components/ui/shared/Loader';
+import PostFilterMenu from '@/components/ui/shared/PostFilterMenu';
+import { postFilters } from '@/constants';
 import useDebounce from '@/hooks/useDebounce';
 import { useGetPosts, useSearchPosts } from '@/lib/react-query/queriesAndMutations';
+import { IPostFilter } from '@/types';
 import { useState, useEffect } from 'react'
 import { useInView } from 'react-intersection-observer';
+import { Models } from 'appwrite';
 
 
 export type SearchResultProps = {
   isSearchFetching: boolean;
-  searchedPosts: any;
+  searchedPosts?: Models.DocumentList<Models.Document>;
 };
 
 const SearchResults = ({ isSearchFetching, searchedPosts }: SearchResultProps) => {
@@ -24,9 +28,17 @@ const SearchResults = ({ isSearchFetching, searchedPosts }: SearchResultProps) =
   }
 };
 
+const EMPTY_MESSAGES: Record<IPostFilter, string> = {
+  all: "End of posts",
+  following: "No posts yet. Follow people on the People page to see their posts here.",
+  popular: "End of posts",
+};
+
 const Explore = () => {
   const { ref, inView } = useInView();
-  const { data: posts, fetchNextPage, hasNextPage } = useGetPosts();
+  // the "All" button next to the heading used to be a placeholder without function
+  const [filter, setFilter] = useState<IPostFilter>("all");
+  const { data: posts, fetchNextPage, hasNextPage } = useGetPosts(filter);
 
   const [searchValue, setSearchValue] = useState("");
   const debouncedSearch = useDebounce(searchValue, 500);
@@ -36,18 +48,11 @@ const Explore = () => {
     if (inView && !searchValue) {
       fetchNextPage();
     }
-  }, [inView, searchValue]);
-
-  if (!posts)
-    return (
-      <div className="flex-center w-full h-full">
-        <Loader />
-      </div>
-    );
+  }, [inView, searchValue, fetchNextPage]);
 
   const shouldShowSearchResults = searchValue !== "";
-  const shouldShowPosts = !shouldShowSearchResults && 
-  posts.pages.every((item) => item && item.documents.length === 0);
+  const isEmpty = !!posts && posts.pages.every((item) => !item || item.documents.length === 0);
+  const heading = postFilters.find((f) => f.value === filter)?.heading;
 
   return (
     <div className="explore-container">
@@ -74,17 +79,11 @@ const Explore = () => {
       </div>
 
       <div className="flex-between w-full max-w-5xl mt-16 mb-7">
-        <h3 className="body-bold md:h3-bold">Popular Today</h3>
+        <h3 className="body-bold md:h3-bold">
+          {shouldShowSearchResults ? "Search Results" : heading}
+        </h3>
 
-        <div className="flex-center gap-3 bg-dark-3 rounded-xl px-4 py-2 cursor-pointer">
-          <p className="small-medium md:base-medium text-light-2">All</p>
-          <img
-            src="/assets/icons/filter.svg"
-            width={20}
-            height={20}
-            alt="filter"
-          />
-        </div>
+        {!shouldShowSearchResults && <PostFilterMenu value={filter} onChange={setFilter} />}
       </div>
 
       <div className="flex flex-wrap gap-9 w-full max-w-5xl">
@@ -93,8 +92,10 @@ const Explore = () => {
             isSearchFetching={isSearchFetching}
             searchedPosts={searchedPosts}
           />
-        ) : shouldShowPosts ? (
-          <p className="text-light-4 mt-10 text-center w-full">End of posts</p>
+        ) : !posts ? (
+          <Loader />
+        ) : isEmpty ? (
+          <p className="text-light-4 mt-10 text-center w-full">{EMPTY_MESSAGES[filter]}</p>
         ) : (
           posts.pages.map((item, index) => (
             item && <GridPostList key={`page-${index}`} posts={item.documents} />
@@ -102,7 +103,7 @@ const Explore = () => {
         )}
       </div>
 
-      {hasNextPage && !searchValue && (
+      {hasNextPage && !searchValue && !isEmpty && (
         <div ref={ref} className="mt-10">
           <Loader />
         </div>

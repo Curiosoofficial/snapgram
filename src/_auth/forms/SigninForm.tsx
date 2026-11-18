@@ -16,18 +16,18 @@ import { Button } from "@/components/ui/button";
 import { SigninValidation } from "@/lib/validation";
 import { z } from "zod";
 import Loader from "@/components/ui/shared/Loader";
+import DemoNotice from "@/components/ui/shared/DemoNotice";
 import { useSignInAccount } from "@/lib/react-query/queriesAndMutations";
 import { useUserContext } from "@/context/AuthContext";
+import { backend } from "@/lib/api";
+import { DEMO_EMAIL, DEMO_PASSWORD } from "@/lib/demo/seed";
 
 const SigninForm = () => {
   const { toast } = useToast();
   const { checkAuthUser, isLoading: isUserLoading } = useUserContext()
   const navigate = useNavigate()
 
-
-
-  const { mutateAsync: signInAccount } = useSignInAccount();
-
+  const { mutateAsync: signInAccount, isPending: isSigningIn } = useSignInAccount();
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof SigninValidation>>({
@@ -38,28 +38,31 @@ const SigninForm = () => {
     },
   });
 
-  // 2. Define a submit handler.
-  async function onSubmit(values: z.infer<typeof SigninValidation>) {
-    const session = await signInAccount({
-      email: values.email,
-      password: values.password,
-    })
+  const signIn = async (values: z.infer<typeof SigninValidation>) => {
+    const session = await signInAccount(values)
 
     if (!session) {
-      return toast({ title: 'Sign up failed. Please try again.'})
+      // the message used to say "Sign up failed" on the sign-in page
+      return toast({ title: 'Sign in failed. Please check your email and password.' })
     }
 
     const isLoggedIn = await checkAuthUser();
-    
 
-    if(isLoggedIn) {
+    if (isLoggedIn) {
       form.reset();
 
       navigate('/')
     } else {
-      return toast({ title: 'Sign up failed. Please try again.'})
+      return toast({ title: 'Sign in failed. Please try again.' })
     }
   }
+
+  // 2. Define a submit handler.
+  async function onSubmit(values: z.infer<typeof SigninValidation>) {
+    await signIn(values);
+  }
+
+  const isBusy = isSigningIn || isUserLoading;
 
   return (
     <Form {...form}>
@@ -72,6 +75,8 @@ const SigninForm = () => {
         <p className="text-light-3 small-medium md:base-regular">
           Welcome back, please enter your details
         </p>
+
+        <DemoNotice />
 
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -103,8 +108,8 @@ const SigninForm = () => {
               </FormItem>
             )}
           />
-          <Button type="submit" className="shad-button_primary">
-            {isUserLoading ? (
+          <Button type="submit" className="shad-button_primary" disabled={isBusy}>
+            {isBusy ? (
               <div className="flex-center gap-2">
                 <Loader /> Loading...
               </div>
@@ -112,6 +117,17 @@ const SigninForm = () => {
               "Sign In"
             )}
           </Button>
+
+          {backend !== "appwrite" && (
+            <Button
+              type="button"
+              className="shad-button_dark_4"
+              disabled={isBusy}
+              onClick={() => signIn({ email: DEMO_EMAIL, password: DEMO_PASSWORD })}
+            >
+              Continue with demo account
+            </Button>
+          )}
 
           <p className="text-small-regular text-light-2 text-center mt-2">
             Don't have an account?
@@ -129,5 +145,3 @@ const SigninForm = () => {
 };
 
 export default SigninForm;
-
-/* 2:04:50 */

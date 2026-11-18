@@ -1,0 +1,19 @@
+{
+  // Own tsconfig for the Vercel Functions in /api. Vercel uses the nearest
+  // tsconfig.json, and the root one is made for Vite (allowImportingTsExtensions,
+  // noEmit), which does not work for compiling functions.
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022", "DOM"],
+    "types": ["node"],
+    "strict": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": ["./**/*.ts"]
+}

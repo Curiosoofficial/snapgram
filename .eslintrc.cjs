@@ -15,4 +15,12 @@ module.exports = {
       { allowConstantExport: true },
     ],
   },
+  overrides: [
+    {
+      // shadcn/ui components and the auth context export helpers next to
+      // components on purpose; only fast refresh is affected, not the build
+      files: ['src/components/ui/*.tsx', 'src/context/*.tsx'],
+      rules: { 'react-refresh/only-export-components': 'off' },
+    },
+  ],
 }

@@ -56,3 +56,7 @@ export const multiFormatDateString = (timestamp: string = ""): string => {
 export const checkIsLiked = (likeList: string[], userId: string) => {
   return likeList.includes(userId);
 };
+
+// "Art, Design" -> ["Art", "Design"]; an empty input gives [] instead of [""]
+export const parseTags = (tags?: string) =>
+  tags?.replace(/ /g, "").split(",").filter(Boolean) || [];

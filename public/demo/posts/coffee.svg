@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080">
+  <defs>
+    <pattern id="wood" width="1080" height="120" patternUnits="userSpaceOnUse">
+      <rect width="1080" height="120" fill="#8a5a3c"/>
+      <rect y="0" width="1080" height="4" fill="#6f452d"/>
+      <path d="M0 50 C200 40 400 64 620 52 S940 40 1080 56" stroke="#9b6a4a" stroke-width="6" fill="none"/>
+      <path d="M0 90 C260 82 520 100 760 88 S980 80 1080 92" stroke="#7a4d33" stroke-width="4" fill="none"/>
+    </pattern>
+    <radialGradient id="coffee" cx=".45" cy=".4" r=".6">
+      <stop offset="0" stop-color="#9c6238"/>
+      <stop offset="1" stop-color="#5a3219"/>
+    </radialGradient>
+  </defs>
+  <rect width="1080" height="1080" fill="url(#wood)"/>
+  <ellipse cx="560" cy="580" rx="330" ry="330" fill="#000" opacity=".18"/>
+  <circle cx="540" cy="560" r="320" fill="#f4efe6"/>
+  <circle cx="540" cy="560" r="290" fill="#e9e1d4"/>
+  <rect x="790" y="520" width="190" height="80" rx="40" fill="#fbf8f2"/>
+  <circle cx="540" cy="560" r="220" fill="#fbf8f2"/>
+  <circle cx="540" cy="560" r="185" fill="url(#coffee)"/>
+  <path d="M540 680 C470 620 420 580 420 530 C420 490 450 465 485 465 C512 465 530 482 540 500 C550 482 568 465 595 465 C630 465 660 490 660 530 C660 580 610 620 540 680Z" fill="#ecd3b0"/>
+  <path d="M540 640 C500 605 470 580 470 548 C470 525 487 510 506 510 C522 510 533 520 540 533 C547 520 558 510 574 510 C593 510 610 525 610 548 C610 580 580 605 540 640Z" fill="#a8693d"/>
+  <path d="M540 600 C520 582 505 570 505 554 C505 543 514 536 523 536 C531 536 536 541 540 548 C544 541 549 536 557 536 C566 536 575 543 575 554 C575 570 560 582 540 600Z" fill="#ecd3b0"/>
+  <rect x="150" y="760" width="40" height="230" rx="20" fill="#c9c3b8" transform="rotate(-25 170 875)"/>
+  <ellipse cx="205" cy="745" rx="42" ry="60" fill="#d9d3c8" transform="rotate(-25 205 745)"/>
+  <g fill="#3d2414">
+    <ellipse cx="880" cy="200" rx="34" ry="24" transform="rotate(30 880 200)"/>
+    <ellipse cx="940" cy="260" rx="34" ry="24" transform="rotate(-20 940 260)"/>
+    <ellipse cx="200" cy="230" rx="34" ry="24" transform="rotate(60 200 230)"/>
+  </g>
+  <g stroke="#6b4228" stroke-width="5" stroke-linecap="round">
+    <path d="M866 194 C876 200 888 202 896 206"/>
+    <path d="M926 262 C936 258 948 256 956 254"/>
+    <path d="M192 216 C198 228 204 238 210 246"/>
+  </g>
+</svg>

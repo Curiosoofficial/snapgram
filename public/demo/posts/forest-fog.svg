@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1080 1080">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e9f1ec"/>
+      <stop offset="1" stop-color="#b9d0c6"/>
+    </linearGradient>
+    <linearGradient id="fog" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset=".5" stop-color="#ffffff" stop-opacity=".75"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <path id="tree" d="M0 -220 L55 -120 L30 -120 L80 -30 L45 -30 L100 70 L-100 70 L-45 -30 L-80 -30 L-30 -120 L-55 -120Z M-10 70 L10 70 L10 110 L-10 110Z"/>
+  </defs>
+  <rect width="1080" height="1080" fill="url(#sky)"/>
+  <circle cx="780" cy="260" r="80" fill="#fff" opacity=".8"/>
+  <g fill="#9dbbb0">
+    <use xlink:href="#tree" x="40" y="520"/><use xlink:href="#tree" x="180" y="500"/><use xlink:href="#tree" x="310" y="530"/>
+    <use xlink:href="#tree" x="450" y="505"/><use xlink:href="#tree" x="590" y="525"/><use xlink:href="#tree" x="730" y="500"/>
+    <use xlink:href="#tree" x="870" y="520"/><use xlink:href="#tree" x="1010" y="505"/>
+  </g>
+  <rect y="480" width="1080" height="200" fill="url(#fog)"/>
+  <g fill="#5f8a7d">
+    <use xlink:href="#tree" x="-20" y="700"/><use xlink:href="#tree" x="140" y="680"/><use xlink:href="#tree" x="290" y="710"/>
+    <use xlink:href="#tree" x="440" y="690"/><use xlink:href="#tree" x="600" y="715"/><use xlink:href="#tree" x="750" y="685"/>
+    <use xlink:href="#tree" x="900" y="705"/><use xlink:href="#tree" x="1060" y="690"/>
+  </g>
+  <rect y="660" width="1080" height="200" fill="url(#fog)" opacity=".8"/>
+  <g fill="#244a40" transform="translate(0 920) scale(1.35)">
+    <use xlink:href="#tree" x="20" y="0"/><use xlink:href="#tree" x="200" y="15"/><use xlink:href="#tree" x="390" y="5"/>
+    <use xlink:href="#tree" x="580" y="20"/><use xlink:href="#tree" x="770" y="0"/>
+  </g>
+  <rect y="1000" width="1080" height="80" fill="#1b3a32"/>
+</svg>

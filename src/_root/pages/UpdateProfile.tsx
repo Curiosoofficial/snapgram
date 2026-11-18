@@ -64,17 +64,18 @@ const UpdateProfile = () => {
       imageId: currentUser.imageId,
     });
 
+    // before, it continued after a failed update and set an empty user
     if (!updatedUser) {
-      toast({
+      return toast({
         title: `Update user failed. Please try again.`,
       });
     }
 
     setUser({
       ...user,
-      name: updatedUser?.name,
-      bio: updatedUser?.bio,
-      imageUrl: updatedUser?.imageUrl,
+      name: updatedUser.name,
+      bio: updatedUser.bio,
+      imageUrl: updatedUser.imageUrl,
     });
     return navigate(`/profile/${id}`);
   };
@@ -186,7 +187,7 @@ const UpdateProfile = () => {
               <Button
                 type="button"
                 className="shad-button_dark_4"
-                onClick={() => navigate(-1)}>
+                onClick={() => navigate(`/profile/${id}`)}>
                 Cancel
               </Button>
               <Button

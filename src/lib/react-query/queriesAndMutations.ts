@@ -2,12 +2,20 @@ import {
     useQuery,
     useMutation,
     useQueryClient,
-    useInfiniteQuery
+    useInfiniteQuery,
+    QueryClient,
 } from '@tanstack/react-query'
-import { createPost, createUserAccount, deletePost, deleteSavedPost, getCurrentUser, getInfinitePosts, getPostById, getRecentPosts, getUserById, getUsers, likePost, savePost, searchPosts, signInAccount, signOutAccount, updatePost, updateUser } from '../appwrite/api'
-import { INewPost, INewUser, IUpdatePost, IUpdateUser } from '@/types'
+import { createPost, createUserAccount, deletePost, deleteSavedPost, followUser, getCurrentUser, getInfinitePosts, getPostById, getRecentPosts, getUserById, getUsers, likePost, savePost, searchPosts, signInAccount, signOutAccount, updatePost, updateUser } from '../api'
+import { INewPost, INewUser, IPostFilter, IUpdatePost, IUpdateUser } from '@/types'
 import { QUERY_KEYS } from './queryKeys'
 
+// Every list that can show a post: home feed, explore grid and the profiles
+const invalidatePostLists = (queryClient: QueryClient) => {
+    queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.GET_RECENT_POSTS] })
+    queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.GET_INFINITE_POSTS] })
+    queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.GET_CURRENT_USER] })
+    queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.GET_USER_BY_ID] })
+}
 
 export const useCreateUserAccount = () => {
     return useMutation({
@@ -32,14 +40,10 @@ export const useSignOutAccount = () => {
 
 export const useCreatePost = () => {
     const queryClient = useQueryClient();
-   return useMutation({
-    mutationFn: (post: INewPost) => createPost(post),
-    onSuccess: () => {
-        queryClient.invalidateQueries({
-            queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
-        })
-    }
-   })
+    return useMutation({
+        mutationFn: (post: INewPost) => createPost(post),
+        onSuccess: () => invalidatePostLists(queryClient)
+    })
 };
 
 export const useGetRecentPosts = () => {
@@ -49,25 +53,18 @@ export const useGetRecentPosts = () => {
     })
 }
 
-
 export const useLikePost = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: ({ postId, likesArray}: { postId: string; likesArray: string[] }) => likePost(postId, likesArray),
+        mutationFn: ({ postId, likesArray }: { postId: string; likesArray: string[] }) => likePost(postId, likesArray),
         onSuccess: (data) => {
             queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.GET_POST_BY_ID, data?.$id]
             })
-            queryClient.invalidateQueries({
-                queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
-            })
-            queryClient.invalidateQueries({
-                queryKey: [QUERY_KEYS.GET_POSTS]
-            })
-            queryClient.invalidateQueries({
-                queryKey: [QUERY_KEYS.GET_CURRENT_USER]
-            })
+            // GET_POSTS was never used as a query key, so the explore
+            // grid was not refreshed. GET_INFINITE_POSTS is the right one.
+            invalidatePostLists(queryClient)
         }
     })
 }
@@ -76,18 +73,8 @@ export const useSavePost = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: ({ postId, userId}: { postId: string; userId: string }) => savePost(postId, userId),
-        onSuccess: () => {           
-            queryClient.invalidateQueries({
-                queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
-            })
-            queryClient.invalidateQueries({
-                queryKey: [QUERY_KEYS.GET_POSTS]
-            })
-            queryClient.invalidateQueries({
-                queryKey: [QUERY_KEYS.GET_CURRENT_USER]
-            })
-        }
+        mutationFn: ({ postId, userId }: { postId: string; userId: string }) => savePost(postId, userId),
+        onSuccess: () => invalidatePostLists(queryClient)
     })
 }
 
@@ -96,17 +83,7 @@ export const useDeleteSavedPost = () => {
 
     return useMutation({
         mutationFn: (savedRecordId: string) => deleteSavedPost(savedRecordId),
-        onSuccess: () => {           
-            queryClient.invalidateQueries({
-                queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
-            })
-            queryClient.invalidateQueries({
-                queryKey: [QUERY_KEYS.GET_POSTS]
-            })
-            queryClient.invalidateQueries({
-                queryKey: [QUERY_KEYS.GET_CURRENT_USER]
-            })
-        }
+        onSuccess: () => invalidatePostLists(queryClient)
     })
 }
 
@@ -123,7 +100,6 @@ export const useGetPostById = (postId: string) => {
         queryFn: () => getPostById(postId),
         enabled: !!postId
     })
-
 }
 
 export const useUpdatePost = () => {
@@ -135,40 +111,36 @@ export const useUpdatePost = () => {
             queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.GET_POST_BY_ID, data?.$id]
             })
+            invalidatePostLists(queryClient)
         }
     })
-
 }
 
 export const useDeletePost = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: ({postId, imageId} : {postId: string, imageId: string}) => deletePost(postId, imageId),
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
-            })
-        }
+        mutationFn: ({ postId, imageId }: { postId: string, imageId: string }) => deletePost(postId, imageId),
+        onSuccess: () => invalidatePostLists(queryClient)
     })
-
 }
 
-export const useGetPosts = () => {
+export const useGetPosts = (filter: IPostFilter = "all") => {
     return useInfiniteQuery({
-      queryKey: [QUERY_KEYS.GET_INFINITE_POSTS],
-      queryFn: getInfinitePosts as any,
-      getNextPageParam: (lastPage: any) => {
-        if (!lastPage || lastPage.documents.length === 0) {
-          return null;
-        }
-  
-        const lastId = lastPage.documents[lastPage.documents.length - 1].$id;
-        return lastId;
-      },
-      initialPageParam: null, // Set initialPageParam to null
+        // one cache entry per filter; invalidating [GET_INFINITE_POSTS] refreshes all of them
+        queryKey: [QUERY_KEYS.GET_INFINITE_POSTS, filter],
+        queryFn: ({ pageParam }) => getInfinitePosts({ pageParam, filter }),
+        initialPageParam: null as string | null,
+        getNextPageParam: (lastPage) => {
+            if (!lastPage || lastPage.documents.length === 0) {
+                return null;
+            }
+
+            // The id of the last post is the cursor for the next page
+            return lastPage.documents[lastPage.documents.length - 1].$id;
+        },
     });
-  };
+};
 
 export const useSearchPosts = (searchTerm: string) => {
     return useQuery({
@@ -180,30 +152,42 @@ export const useSearchPosts = (searchTerm: string) => {
 
 export const useGetUserById = (userId: string) => {
     return useQuery({
-      queryKey: [QUERY_KEYS.GET_USER_BY_ID, userId],
-      queryFn: () => getUserById(userId),
-      enabled: !!userId,
+        queryKey: [QUERY_KEYS.GET_USER_BY_ID, userId],
+        queryFn: () => getUserById(userId),
+        enabled: !!userId,
     });
-  };
+};
 
 export const useUpdateUser = () => {
     const queryClient = useQueryClient();
     return useMutation({
-      mutationFn: (user: IUpdateUser) => updateUser(user),
-      onSuccess: (data) => {
-        queryClient.invalidateQueries({
-          queryKey: [QUERY_KEYS.GET_CURRENT_USER],
-        });
-        queryClient.invalidateQueries({
-          queryKey: [QUERY_KEYS.GET_USER_BY_ID, data?.$id],
-        });
-      },
+        mutationFn: (user: IUpdateUser) => updateUser(user),
+        onSuccess: () => {
+            // Name and avatar also appear on posts and in the user list
+            invalidatePostLists(queryClient)
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.GET_USERS] })
+        },
     });
-  };
+};
+
+export const useFollowUser = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ userId, follow }: { userId: string; follow: boolean }) => followUser(userId, follow),
+        onSuccess: () => {
+            // follower counts on profiles, the Follow buttons in the people list
+            // and the "Following" filter on the explore page
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.GET_USER_BY_ID] })
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.GET_USERS] })
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.GET_CURRENT_USER] })
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.GET_INFINITE_POSTS] })
+        },
+    });
+};
 
 export const useGetUsers = (limit?: number) => {
     return useQuery({
-      queryKey: [QUERY_KEYS.GET_USERS],
-      queryFn: () => getUsers(limit),
+        queryKey: [QUERY_KEYS.GET_USERS],
+        queryFn: () => getUsers(limit),
     });
 };

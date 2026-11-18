@@ -1,3 +1,5 @@
+import { IPostFilter } from "@/types";
+
 export const sidebarLinks = [
     {
       imgURL: "/assets/icons/home.svg",
@@ -48,3 +50,10 @@ export const sidebarLinks = [
       label: "Create",
     },
   ];
+
+// Filter options on the Explore page
+export const postFilters: Array<{ value: IPostFilter; label: string; heading: string }> = [
+  { value: "all", label: "All", heading: "Latest Posts" },
+  { value: "following", label: "Following", heading: "From People You Follow" },
+  { value: "popular", label: "Popular", heading: "Most Liked" },
+];

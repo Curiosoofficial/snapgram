@@ -4,20 +4,19 @@ import { Button } from "../button";
 
 type FileUploaderProps = {
   fieldChange: (FILES: File[]) => void;
-  mediaUrl: string;
+  mediaUrl?: string;
 };
 
 const FileUploader = ({ fieldChange, mediaUrl }: FileUploaderProps) => {
-  const [file, setFile] = useState<File[]>([]);
   const [fileUrl, setFileUrl] = useState(mediaUrl);
 
   const onDrop = useCallback(
     (acceptedFiles: FileWithPath[]) => {
-      setFile(acceptedFiles);
+      if (acceptedFiles.length === 0) return;
       fieldChange(acceptedFiles);
       setFileUrl(URL.createObjectURL(acceptedFiles[0]));
     },
-    [file]
+    [fieldChange]
   );
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -58,7 +57,9 @@ const FileUploader = ({ fieldChange, mediaUrl }: FileUploaderProps) => {
           </h3>
           <p className="text-light-4 small-regular mb-6">SVG, PNG, JPG</p>
 
-          <Button className="shad-button_dark_4">Select from Device</Button>
+          {/* type="button": a <button> inside a <form> is a submit button by
+              default, so this used to submit the whole post form */}
+          <Button type="button" className="shad-button_dark_4">Select from Device</Button>
         </div>
       )}
     </div>

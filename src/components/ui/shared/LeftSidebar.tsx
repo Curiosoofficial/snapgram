@@ -1,25 +1,15 @@
-import { useEffect } from "react";
-import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 
 import { Button } from "../button";
 import { useUserContext } from "@/context/AuthContext";
-import { useSignOutAccount } from "@/lib/react-query/queriesAndMutations";
 import { sidebarLinks } from "@/constants";
 import { INavLink } from "@/types";
+import useSignOut from "@/hooks/useSignOut";
 
 const LeftSidebar = () => {
   const { pathname } = useLocation();
-  const navigate = useNavigate();
   const { user } = useUserContext();
-  const { mutate: signOut, isSuccess } = useSignOutAccount();
-
-  useEffect(() => {
-    if (isSuccess) navigate(0);
-  }, [isSuccess]);
-
-  const signOutNavigation = () => {
-    navigate('/sign-in')
-  }
+  const { signOut, isSigningOut } = useSignOut();
 
   return (
     <nav className="leftsidebar">
@@ -37,7 +27,7 @@ const LeftSidebar = () => {
           <img
             src={user.imageUrl || '/assets/icons/profile-placeholder.svg'}
             alt="Profile Picture"
-            className="h-14 w-14 rounded-full"
+            className="h-14 w-14 rounded-full object-cover"
           />
           <div className="flex flex-col">
             <p className="body-bold">{user.name}</p>
@@ -77,7 +67,8 @@ const LeftSidebar = () => {
       <Button
         variant="ghost"
         className="shad-button_ghost"
-        onClick={() => {signOut(); signOutNavigation()}}
+        onClick={signOut}
+        disabled={isSigningOut}
       >
         <img src="/assets/icons/logout.svg" alt="logout" />
         <p className="small-medium lg:base-medium">Log out</p>
@@ -87,5 +78,3 @@ const LeftSidebar = () => {
 };
 
 export default LeftSidebar;
-
-// 2:38:18

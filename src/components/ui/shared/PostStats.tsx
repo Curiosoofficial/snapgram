@@ -10,7 +10,7 @@ type PostStatsProps = {
 }
 
 const PostStats = ({ post, userId }: PostStatsProps) => {
-  const likesList = post?.likes.map((user: Models.Document) => user.$id)
+  const likesList: string[] = post?.likes?.map((user: Models.Document) => user.$id) ?? []
 
   const [likes, setLikes] = useState(likesList)
   const [isSaved, setIsSaved] = useState(false)
@@ -21,11 +21,12 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
 
   const { data: currentUser} = useGetCurrentUser()
 
-  const savedPostRecord = currentUser?.save.find((record: Models.Document) => record.post.$id === post?.$id);
+  // record.post is null when the saved post was deleted
+  const savedPostRecord = currentUser?.save?.find((record: Models.Document) => record.post?.$id === post?.$id);
 
   useEffect(() => {
     setIsSaved(!!savedPostRecord)
-  }, [currentUser])
+  }, [savedPostRecord])
   
 
   const handleLikePost = (e: React.MouseEvent) => {
@@ -81,8 +82,7 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
                 ? "/assets/icons/saved.svg"
                 : "/assets/icons/save.svg"
               }
-            
-                alt="like"
+                alt={isSaved ? "saved" : "save"}
                 width={20}
                 height={20}
                 onClick={handleSavePost}

@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6d7fd6"/>
+      <stop offset=".5" stop-color="#f3a6b5"/>
+      <stop offset="1" stop-color="#ffd8a8"/>
+    </linearGradient>
+    <linearGradient id="lake" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7f8fd9"/>
+      <stop offset="1" stop-color="#2c3b84"/>
+    </linearGradient>
+  </defs>
+  <rect width="1080" height="1080" fill="url(#sky)"/>
+  <circle cx="540" cy="560" r="90" fill="#fff4dc"/>
+  <path d="M0 600 L120 470 L210 530 L330 400 L450 520 L560 440 L680 540 L800 420 L930 520 L1080 450 L1080 620 L0 620Z" fill="#8c86c9"/>
+  <path d="M330 400 L370 440 L350 445 L380 470 L330 455 L300 430Z" fill="#fff" opacity=".8"/>
+  <path d="M800 420 L840 455 L815 460 L845 490 L790 470 L770 445Z" fill="#fff" opacity=".8"/>
+  <path d="M0 620 L160 560 L300 600 L460 570 L620 610 L780 565 L940 600 L1080 575 L1080 640 L0 640Z" fill="#5d5aa6"/>
+  <rect y="630" width="1080" height="450" fill="url(#lake)"/>
+  <g fill="#fff4dc" opacity=".7">
+    <rect x="470" y="660" width="140" height="8" rx="4"/>
+    <rect x="490" y="690" width="100" height="7" rx="3"/>
+    <rect x="505" y="720" width="70" height="6" rx="3"/>
+    <rect x="515" y="750" width="50" height="5" rx="2"/>
+    <rect x="525" y="780" width="30" height="4" rx="2"/>
+  </g>
+  <g fill="#c7cdf5" opacity=".35">
+    <rect x="80" y="760" width="160" height="5" rx="2"/><rect x="760" y="820" width="200" height="6" rx="3"/>
+    <rect x="200" y="900" width="120" height="5" rx="2"/><rect x="660" y="960" width="140" height="5" rx="2"/>
+  </g>
+  <g transform="translate(700 760)">
+    <path d="M-110 40 L110 40 L80 80 L-80 80Z" fill="#2b2140"/>
+    <rect x="-4" y="-200" width="8" height="240" fill="#2b2140"/>
+    <path d="M10 -190 L10 30 L120 30Z" fill="#fff8ee"/>
+    <path d="M-10 -160 L-10 30 L-95 30Z" fill="#ffd1c2"/>
+    <path d="M-80 90 L80 90" stroke="#fff4dc" stroke-width="4" opacity=".5"/>
+    <path d="M-60 104 L60 104" stroke="#fff4dc" stroke-width="3" opacity=".35"/>
+  </g>
+  <g fill="none" stroke="#3a3157" stroke-width="5" stroke-linecap="round">
+    <path d="M190 260 q15 -14 30 0 q15 -14 30 0"/>
+    <path d="M270 220 q12 -11 24 0 q12 -11 24 0"/>
+  </g>
+</svg>

@@ -8,6 +8,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Textarea } from "../textarea";
 import FileUploader from "../shared/FileUploader";
+import Loader from "../shared/Loader";
 import { PostValidation } from "@/lib/validation";
 import { Models } from "appwrite";
 import { useCreatePost, useUpdatePost } from "@/lib/react-query/queriesAndMutations";
@@ -28,6 +29,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  const isLoading = isLoadingCreate || isLoadingUpdate;
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof PostValidation>>({
@@ -50,11 +52,17 @@ const PostForm = ({ post, action }: PostFormProps) => {
         imageUrl: post?.imageUrl,
       })
 
+      // before, it navigated away even when saving failed
       if(!updatedPost) {
-        toast({title: 'Please try again'})
+        return toast({title: 'Could not update the post. Please try again.'})
       }
 
       return navigate(`/posts/${post.$id}`)
+    }
+
+    // A new post needs a photo (the validation schema accepts an empty list)
+    if (!values.file || values.file.length === 0) {
+      return form.setError('file', { message: 'Please add a photo.' })
     }
 
     const newPost = await createPost({
@@ -63,25 +71,26 @@ const PostForm = ({ post, action }: PostFormProps) => {
     })
 
     if(!newPost) {
-      toast({
-        title: 'Please try again'
+      return toast({
+        title: 'Could not create the post. Please try again.'
       })
     }
 
     navigate('/')
   }
+
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-9 w-full w-max-5xl"
+        className="flex flex-col gap-9 w-full max-w-5xl"
       >
         <FormField
           control={form.control}
           name="caption"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="shad-form-label">Caption</FormLabel>
+              <FormLabel className="shad-form_label">Caption</FormLabel>
               <FormControl>
                 <Textarea
                   className="shad-textarea custom-scrollbar"
@@ -98,7 +107,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
           name="file"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="shad-form-label">Add Photos</FormLabel>
+              <FormLabel className="shad-form_label">Add Photos</FormLabel>
               <FormControl>
                 <FileUploader
                     fieldChange={field.onChange}
@@ -115,7 +124,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
           name="location"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="shad-form-label">Add Location</FormLabel>
+              <FormLabel className="shad-form_label">Add Location</FormLabel>
               <FormControl>
                 <Input type="text" className="shad-input" {...field}  />
               </FormControl>
@@ -129,7 +138,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
           name="tags"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="shad-form-label">
+              <FormLabel className="shad-form_label">
                 Add Tags (separated by comma " , ")
               </FormLabel>
               <FormControl>
@@ -146,20 +155,23 @@ const PostForm = ({ post, action }: PostFormProps) => {
         />
 
         <div className="flex gap-4 items-center justify-end">
+          {/* had no onClick, so "Cancel" did nothing */}
           <Button
             type="button"
             className="shad-button_dark_4"
-            >
-              Cancel
+            onClick={() => navigate(post ? `/posts/${post.$id}` : '/')}
+          >
+            Cancel
           </Button>
 
-
-          <Button 
+          <Button
             type="submit"
             className="shad-button_primary whitespace-nowrap"
-            disabled={isLoadingCreate || isLoadingUpdate}
+            disabled={isLoading}
           >
-            {isLoadingCreate || isLoadingUpdate && 'Loading...'}
+            {/* was "isLoadingCreate || isLoadingUpdate && 'Loading...'":
+                && binds stronger than ||, so it rendered nothing while creating */}
+            {isLoading && <Loader />}
             {action} Post
           </Button>
         </div>
@@ -169,8 +181,3 @@ const PostForm = ({ post, action }: PostFormProps) => {
 };
 
 export default PostForm;
-
-
-// 4:38:34 / POST CRUD
-
-

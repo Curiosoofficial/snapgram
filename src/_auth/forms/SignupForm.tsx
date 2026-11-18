@@ -16,6 +16,7 @@ import { useForm } from "react-hook-form";
 import { SignupValidation } from "@/lib/validation";
 import { z } from "zod";
 import Loader from "@/components/ui/shared/Loader";
+import DemoNotice from "@/components/ui/shared/DemoNotice";
 import { useCreateUserAccount, useSignInAccount } from "@/lib/react-query/queriesAndMutations";
 import { useUserContext } from "@/context/AuthContext";
 
@@ -44,7 +45,7 @@ const SignupForm = () => {
   async function onSubmit(values: z.infer<typeof SignupValidation>) {
     const newUser = await createUserAccount(values);
     if (!newUser) {
-      return toast({ title: 'Sign up failed. Please try again.'})
+      return toast({ title: 'Sign up failed. Maybe this email is already registered.'})
     }
 
     const session = await signInAccount({
@@ -78,6 +79,8 @@ const SignupForm = () => {
         <p className="text-light-3 small-medium md:base-regular">
           To use Snapgram, please enter your details
         </p>
+
+        <DemoNotice />
 
         <form
           onSubmit={form.handleSubmit(onSubmit)}

@@ -12,6 +12,14 @@ dist
 dist-ssr
 *.local
 
+# Env files (only the template is committed)
+.env
+.env.*
+!.env.example
+
+# Vercel CLI
+.vercel
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -22,3 +30,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local database of `npm run dev` (PGlite)
+.data

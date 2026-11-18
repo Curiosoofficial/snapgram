@@ -11,7 +11,7 @@ import {
 
 
 
-import { Button } from "@/components/ui/button";
+import FollowButton from "@/components/ui/shared/FollowButton";
 import { LikedPosts } from ".";
 import { useUserContext } from "@/context/AuthContext";
 import Loader from "@/components/ui/shared/Loader";
@@ -67,8 +67,9 @@ const Profile = () => {
 
             <div className="flex gap-8 mt-10 items-center justify-center xl:justify-start flex-wrap z-20">
               <StatBlock value={currentUser.posts.length} label="Posts" />
-              <StatBlock value={20} label="Followers" />
-              <StatBlock value={20} label="Following" />
+              {/* were hard-coded to 20 in the tutorial */}
+              <StatBlock value={currentUser.followersCount ?? 0} label="Followers" />
+              <StatBlock value={currentUser.followingCount ?? 0} label="Following" />
             </div>
 
             <p className="small-medium md:base-medium text-center xl:text-left mt-7 max-w-screen-sm">
@@ -94,11 +95,11 @@ const Profile = () => {
                 </p>
               </Link>
             </div>
-            <div className={`${user.id === id && "hidden"}`}>
-              <Button type="button" className="shad-button_primary px-8">
-                Follow
-              </Button>
-            </div>
+            <FollowButton
+              userId={currentUser.$id}
+              isFollowing={currentUser.isFollowing}
+              className="h-12 px-8"
+            />
           </div>
         </div>
       </div>

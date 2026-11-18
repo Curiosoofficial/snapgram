@@ -29,7 +29,9 @@ const Home = () => {
           ) : (
             <ul className="flex flex-col flex-1 gap-9 w-full">
               {posts?.documents.map((post: Models.Document) => (
-                <PostCard post={post} key={post.caption}/>
+                // key was post.caption -> two posts with the same caption
+                // got the same key and React mixed them up
+                <PostCard post={post} key={post.$id}/>
               ))}
             </ul>
           )}

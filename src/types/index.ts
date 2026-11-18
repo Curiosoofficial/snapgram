@@ -7,6 +7,9 @@
     checkAuthUser: () => Promise<boolean>;
   }
 
+  // Explore page filter: all posts, posts of people you follow, most liked first
+  export type IPostFilter = "all" | "following" | "popular";
+
   export type INavLink = {
     imgURL: string;
     route: string;
@@ -34,7 +37,7 @@
     postId: string;
     caption: string;
     imageId: string;
-    imageUrl: URL;
+    imageUrl: URL | string;
     file: File[];
     location?: string;
     tags?: string;
