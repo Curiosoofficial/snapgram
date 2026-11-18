@@ -6,7 +6,7 @@
 
 Snapgram ist eine Social-Media-App im Stil von Instagram. Man kann sich registrieren, Fotos mit Text, Ort und Tags posten, Posts liken und speichern, nach Posts suchen und das eigene Profil bearbeiten. Alle Besucher sehen dieselben Posts.
 
-**Live-Demo:** [snapgram-eta.vercel.app](https://snapgram-eta.vercel.app)
+**Live-Demo:** [snapgram-woad.vercel.app](https://snapgram-woad.vercel.app)
 **Demo-Login:** auf der Login-Seite «Continue with demo account» klicken oder `demo@snapgram.dev` / `demo1234` eingeben.
 Die öffentliche Demo wird alle 24 Stunden auf die Beispieldaten zurückgesetzt.
 
