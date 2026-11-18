@@ -10,14 +10,14 @@ type Backend = "api" | "appwrite" | "demo"
 // 1. VITE_BACKEND if set ("api" | "appwrite" | "demo")
 // 2. `npm run dev` -> "api" (own backend with a local database)
 // 3. build with DATABASE_URL (Neon connected on Vercel) -> "api"
-// 4. build with Appwrite variables -> "appwrite"
-// 5. otherwise -> "demo" (everything in the browser)
+// 4. otherwise -> "demo" (everything in the browser)
+// Appwrite only with VITE_BACKEND=appwrite: old Appwrite variables (e.g. still
+// set in a Vercel project from 2023) must not switch to a deleted project.
 function chooseBackend(env: Record<string, string>, command: "serve" | "build"): Backend {
   const wanted = env.VITE_BACKEND as Backend | undefined
   if (wanted === "api" || wanted === "appwrite" || wanted === "demo") return wanted
   if (env.VITE_DEMO_MODE === "true") return "demo"
   if (command === "serve" || env.DATABASE_URL || env.POSTGRES_URL) return "api"
-  if (env.VITE_APPWRITE_URL && env.VITE_APPWRITE_PROJECT_ID) return "appwrite"
   return "demo"
 }
 

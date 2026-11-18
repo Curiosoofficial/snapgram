@@ -6,7 +6,7 @@
 
 Snapgram ist eine Social-Media-App im Stil von Instagram. Man kann sich registrieren, Fotos mit Text, Ort und Tags posten, Posts liken und speichern, nach Posts suchen und das eigene Profil bearbeiten. Alle Besucher sehen dieselben Posts.
 
-**Live-Demo:** [LIVE-LINK FOLGT] (geplant: `https://snapgram-curioso.vercel.app`)
+**Live-Demo:** [snapgram-eta.vercel.app](https://snapgram-eta.vercel.app)
 **Demo-Login:** auf der Login-Seite «Continue with demo account» klicken oder `demo@snapgram.dev` / `demo1234` eingeben.
 Die öffentliche Demo wird alle 24 Stunden auf die Beispieldaten zurückgesetzt.
 
@@ -48,7 +48,7 @@ Browser (React)
 ```
 
 Die Komponenten wissen nicht, welches Backend antwortet. Alle drei Umsetzungen erfüllen denselben TypeScript-Typ `SnapgramApi`, und TypeScript meldet einen Fehler, sobald einer davon eine Funktion fehlt.
-Welches Backend gebaut wird, entscheidet `vite.config.ts` automatisch: Mit `DATABASE_URL` (Neon) ist es das eigene Backend, mit Appwrite-Variablen Appwrite, ohne beides die Offline-Demo.
+Welches Backend gebaut wird, entscheidet `vite.config.ts` automatisch: Mit `DATABASE_URL` (Neon) ist es das eigene Backend, sonst die Offline-Demo. Appwrite läuft nur mit `VITE_BACKEND=appwrite`.
 
 ### Das eigene Backend (`/api`)
 
@@ -86,7 +86,7 @@ Die API gibt dieselbe Datenform zurück wie Appwrite (`$id`, `$createdAt`, verkn
 
 ## Lokal starten
 
-Voraussetzung: Node.js 18 oder neuer.
+Voraussetzung: Node.js 20 oder neuer (auf Vercel läuft Node.js 22, festgelegt in `package.json` unter `engines`).
 
 ```bash
 npm ci
